@@ -1,42 +1,52 @@
 export const Filters = () => {
   return (
-    <>
-      <div className="filter h-screen border-5 border-gray-300 border-r pl-5">
-        <h1 className="text-3xl">FILTROS</h1>
-        <div className="py-4">
-          <h3>CIUDAD</h3>
+    <aside className="w-300 h-screen font-inter pl-5 border-r">
+      <h1 className="text-32 font-semibold mt-2 mb-3">FILTROS</h1>
+      <div className="mb-2 font-medium">
+        <h2>CIUDAD</h2>
+        <select className="w-236 h-8 font-light mt-1 text-xs text-neutral-500 border border-neutral-300 rounded-md outline-none">
+          <option>SELECCIONE UNA CIUDAD</option>
+        </select>
+      </div>
+      <div className="mb-2 font-medium">
+        <h2>PRECIO</h2>
+        <div className="mt-1 font-light flex gap-2">
           <input
-            className="border-2 px-1 py-1 w-60"
-            placeholder="Seleccione la ciudad"
-          />
-          <h3>PRECIO</h3>
-          <input
-            className="border-2 px-1 py-1 w-20 text-center"
+            className="text-center text-xs w-57 h-7 border border-neutral-300 rounded-md outline-none"
+            type="text"
             placeholder="MIN"
           />
+          <span className="text-neutral-400">-</span>
           <input
-            className="border-2 px-1 py-1 w-20 text-center"
+            className="text-center text-xs w-57 h-7 border border-neutral-300 rounded-md outline-none"
+            type="text"
             placeholder="MAX"
-          />
-          <h3>TAMAÑO DEL AREA</h3>
-          <input
-            className="border-2 px-1 py-1 w-20 text-center"
-            placeholder="MIN"
-          />
-          <input
-            className="border-2 px-1 py-1 w-20 text0center"
-            placeholder="MAX"
-          />
-        </div>
-        <h1 className="text-3xl">CATEGORIAS</h1>
-        <div className="py-4">
-          <h3>ORDENAR POR CIUDAD</h3>
-          <input
-            className="border-2 px-1 py-1 w-60"
-            placeholder="Seleccione la ciudad"
           />
         </div>
       </div>
-    </>
+      <div className="mb-5 font-medium">
+        <h2>TAMAÑO DEL AREA</h2>
+        <div className="mt-1 font-light flex gap-2">
+          <input
+            className="text-center text-xs w-57 h-7 border border-neutral-300 rounded-md outline-none"
+            type="text"
+            placeholder="MIN"
+          />
+          <span className="text-neutral-400">-</span>
+          <input
+            className="text-center text-xs w-57 h-7 border border-neutral-300 rounded-md outline-none"
+            type="text"
+            placeholder="MAX"
+          />
+        </div>
+      </div>
+      <h1 className="text-32 font-semibold mb-3">CATEGORIAS</h1>
+      <div className="mb-2 font-medium">
+        <h2>ORDENAR POR CIUDAD</h2>
+        <select className="w-236 h-8 font-light mt-1 text-xs text-neutral-500 border border-neutral-300 rounded-md outline-none">
+          <option>SELECCIONE UNA CIUDAD</option>
+        </select>
+      </div>
+    </aside>
   );
 };
