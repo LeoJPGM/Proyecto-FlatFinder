@@ -1,6 +1,8 @@
-export const Filters = () => {
+import PropTypes from "prop-types";
+
+export const Filters = ({ className }) => {
   return (
-    <aside className="w-300 h-screen font-inter pl-5 border-r">
+    <aside className={`w-1/4 h-screen font-inter pl-2 ${className}`}>
       <h1 className="text-32 font-semibold mt-2 mb-3">FILTROS</h1>
       <div className="mb-2 font-medium">
         <h2>CIUDAD</h2>
@@ -12,13 +14,13 @@ export const Filters = () => {
         <h2>PRECIO</h2>
         <div className="mt-1 font-light flex gap-2">
           <input
-            className="text-center text-xs w-57 h-7 border border-neutral-300 rounded-md outline-none"
+            className="text-center text-xs w-60-px h-7 border border-neutral-300 rounded-md outline-none"
             type="text"
             placeholder="MIN"
           />
           <span className="text-neutral-400">-</span>
           <input
-            className="text-center text-xs w-57 h-7 border border-neutral-300 rounded-md outline-none"
+            className="text-center text-xs w-60-px h-7 border border-neutral-300 rounded-md outline-none"
             type="text"
             placeholder="MAX"
           />
@@ -28,13 +30,13 @@ export const Filters = () => {
         <h2>TAMAÑO DEL AREA</h2>
         <div className="mt-1 font-light flex gap-2">
           <input
-            className="text-center text-xs w-57 h-7 border border-neutral-300 rounded-md outline-none"
+            className="text-center text-xs w-60-px h-7 border border-neutral-300 rounded-md outline-none"
             type="text"
             placeholder="MIN"
           />
           <span className="text-neutral-400">-</span>
           <input
-            className="text-center text-xs w-57 h-7 border border-neutral-300 rounded-md outline-none"
+            className="text-center text-xs w-60-px h-7 border border-neutral-300 rounded-md outline-none"
             type="text"
             placeholder="MAX"
           />
@@ -49,4 +51,8 @@ export const Filters = () => {
       </div>
     </aside>
   );
+};
+
+Filters.propTypes = {
+  className: PropTypes.string,
 };
