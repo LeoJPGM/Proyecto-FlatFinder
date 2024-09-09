@@ -1,21 +1,80 @@
 import { Navbar } from "../components/Navbar";
 import { FormSubmit } from "../helpers/FormSubmit";
-import { useRef, useState } from "react";
-import { FlatScheme } from "../helpers/Schemes";
-import { setFlats, updateUsers } from "../services/FireBase"; // Asegúrate de importar updateUsers
-import { imageFlatUpload } from "../services/FireStorage";
+import { useRef, useState, useEffect } from "react";
+import { FlatUpdateScheme } from "../helpers/Schemes";
+import { getFlatById, updateFlat } from "../services/FireBase";
+import { useParams } from "react-router-dom";
+import { imageFlatUpload } from "../services/FireStorage"; //PARA IMAGEN
 import { useNavigate } from "react-router-dom";
-import { increment } from "firebase/firestore";
 
-export const NewFlatPage = () => {
+export const EditFlatPage = () => {
   const form = useRef(null);
+  const { id } = useParams();
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
-  const [message, setMessage] = useState("");
+  const [message, setMessage] = useState();
   const [error, setError] = useState(false);
-
   const navigate = useNavigate();
 
+  //Funcion para el checkbox
+  const [check, setCheck] = useState(false);
+  //Funcion para traer los flats de Firebase
+  const [flatData, setFlatData] = useState({
+    city: "",
+    streetName: "",
+    streetNumber: "",
+    areaSize: "",
+    hasAc: false,
+    yearBuilt: "",
+    rentPrice: "",
+    dateAvailable: "",
+  });
+
+  //Funcion para traer los flats de Firebase
+  useEffect(() => {
+    const fetchFlatData = async () => {
+      const data = await getFlatById(id);
+      console.log(JSON.stringify(data.dateAvailable));
+      const transformedDate = new Date(data.dateAvailable.seconds * 1000);
+      const formattedDate = transformedDate.toISOString().split("T")[0];
+      console.log(formattedDate);
+      data.dateAvailable = formattedDate;
+      console.log(data.hasAc);
+      setFlatData(data);
+      setCheck(data);
+    };
+    fetchFlatData();
+  }, [id]);
+
+  //Funcion para almacenar datos HandleSubmit
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    //constante para almacenar datos
+    const newFlat = FormSubmit(form, FlatUpdateScheme);
+    //Si la validacion es correcta, se almacenan los datos
+    if (newFlat.success) {
+      //Guardar flats en firebase
+      await updateFlat(id, newFlat.data);
+      await handleUpload(id);
+
+      setMessage("Flat editado correctamente");
+      setTimeout(() => {
+        setMessage("");
+        navigate("/all-flats");
+      }, 1500);
+    } else {
+      //Si la validacion es incorrecta, se muestra el error
+      setError(true);
+      setMessage(newFlat.errorMessage);
+
+      setTimeout(() => {
+        setMessage("");
+        setError(false);
+      }, 1500);
+    }
+  };
+
+  //FUNCION PARA IMAGENES
   const handleImageChange = (e) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
@@ -23,74 +82,17 @@ export const NewFlatPage = () => {
       if (file.type.startsWith("image/")) {
         setImageFile(file);
         setImagePreview(URL.createObjectURL(file));
-        setError(false);
-        setMessage(""); // Clear previous messages
-      } else {
-        setError(true);
-        setMessage("Por favor, selecciona un archivo de imagen válido.");
       }
-    }
-  };
-
-  const handleUpload = async (flatID) => {
-    try {
-      await imageFlatUpload(flatID, imageFile);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    // Verifica si se ha seleccionado una imagen
-    if (imageFile === null) {
-      setError(true);
-      setMessage("Por favor, selecciona una imagen antes de continuar.");
-      setTimeout(() => {
-        setMessage("");
-        setError(false);
-      }, 1500);
-      return; // Detiene la ejecución si no se ha seleccionado una imagen
-    }
-
-    const newFlat = FormSubmit(form, FlatScheme);
-
-    if (newFlat.success) {
-      const userId = JSON.parse(localStorage.getItem("userLogged"));
-      const flatData = {
-        ...newFlat.data,
-        userId,
-      };
-      const flat = await setFlats(flatData);
-
-      await handleUpload(flat.id);
-
-      // Actualizar el contador de saveFlats del usuario
-      try {
-        // Aquí se asume que `saveFlats` es un campo que debes incrementar
-        await updateUsers(userId, {
-          saveFlats: increment(1), // Incrementa el contador en 1
-        });
-        setMessage("Flat creado correctamente");
-      } catch (error) {
-        console.error("Error actualizando el contador de saveFlats:", error);
-        setMessage(
-          "Flat creado pero hubo un problema actualizando el contador."
-        );
-      }
-
-      setTimeout(() => {
-        setMessage("");
-        navigate("/all-flats");
-      }, 1500);
     } else {
-      setError(true);
-      setMessage(newFlat.errorMessage);
-      setTimeout(() => {
-        setMessage("");
-        setError(false);
-      }, 1500);
+      alert("Selecciona una imagen");
+    }
+  };
+
+  //Para subir la URL y actualizar el flat
+  const handleUpload = async (flatID) => {
+    if (imageFile) {
+      imageFlatUpload(flatID, imageFile);
+      setMessage("Imagen subida correctamente");
     }
   };
 
@@ -104,11 +106,9 @@ export const NewFlatPage = () => {
             "url('https://a0.muscache.com/im/pictures/1fc28506-d659-4588-a787-4dd290a7c230.jpg?im_w=1440')",
         }}
       >
-        <div className="flex justify-center items-center py-8 bg-white rounded-lg shadow-lg my-8 max-w-3xl mx-auto p-6">
+        <div className="flex justify-center items-center py-8 bg-white rounded-lg shadow-lg mx-4 my-8 max-w-3xl mx-auto p-6">
           <div className="w-full">
-            <h2 className="text-2xl font-bold mb-4 text-center">
-              Crear un Flat
-            </h2>
+            <h2 className="text-2xl font-bold mb-4 text-center">Edit Flat</h2>
             <div className="flex flex-col items-center mt-4 mb-4">
               <input
                 type="file"
@@ -121,28 +121,24 @@ export const NewFlatPage = () => {
                 htmlFor="fileInput"
                 className="flex items-center justify-center w-36 h-36 border rounded-full cursor-pointer"
               >
-                {imageFile ? (
-                  <img
-                    src={imagePreview}
-                    alt="Image Flat"
-                    className="w-full h-full object-cover rounded-full"
-                  />
-                ) : (
-                  <span className="text-gray-500">Seleccionar Imagen</span>
-                )}
+                <img
+                  src={imagePreview ? imagePreview : flatData.flatImageURL}
+                  alt="Image Flat"
+                  className="w-full h-full object-cover rounded-full"
+                />
               </label>
               <p className="text-xs mt-2 animate-slideUP text-center">
-                {`Por favor, seleccione una imagen. (Obligatorio)`}
+                {`Por favor, seleccione una imagen. (Opcional)`}
               </p>
             </div>
-            <form ref={form} onSubmit={handleSubmit}>
+            <form className="mt-4" ref={form} onSubmit={handleSubmit}>
               <div className="grid grid-cols-2 gap-4">
-                {/* Fields for Flat Details */}
                 <div className="mb-4">
                   <label className="block text-gray-700">Ciudad</label>
                   <input
                     name="city"
                     type="text"
+                    defaultValue={flatData.city}
                     className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
@@ -153,6 +149,7 @@ export const NewFlatPage = () => {
                   <input
                     name="streetName"
                     type="text"
+                    defaultValue={flatData.streetName}
                     className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
@@ -163,6 +160,7 @@ export const NewFlatPage = () => {
                   <input
                     name="streetNumber"
                     type="number"
+                    defaultValue={flatData.streetNumber}
                     className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
@@ -171,6 +169,7 @@ export const NewFlatPage = () => {
                   <input
                     name="areaSize"
                     type="number"
+                    defaultValue={flatData.areaSize}
                     className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
@@ -181,6 +180,7 @@ export const NewFlatPage = () => {
                   <input
                     name="hasAc"
                     type="checkbox"
+                    defaultChecked={flatData.hasAc ? "on" : undefined}
                     className="w-5 h-5 text-blue-500 mt-1 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
@@ -191,6 +191,7 @@ export const NewFlatPage = () => {
                   <input
                     name="yearBuilt"
                     type="number"
+                    defaultValue={flatData.yearBuilt}
                     className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
@@ -201,6 +202,7 @@ export const NewFlatPage = () => {
                   <input
                     name="rentPrice"
                     type="number"
+                    defaultValue={flatData.rentPrice}
                     className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
@@ -211,22 +213,25 @@ export const NewFlatPage = () => {
                   <input
                     name="dateAvailable"
                     type="date"
+                    defaultValue={flatData.dateAvailable}
                     className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
               </div>
-              <p
-                className={`text-center text-sm pb-2 ${
-                  error ? "text-red-600" : "text-green-600"
-                }`}
-              >
-                {message}
-              </p>
+              {error ? (
+                <p className="text-center text-sm pb-2 text-red-600">
+                  {message}
+                </p>
+              ) : (
+                <p className="text-center text-sm pb-2 text-green-600">
+                  {message}
+                </p>
+              )}
               <button
                 type="submit"
-                className="w-full bg-lime-600 hover:bg-lime-700 text-white font-bold py-2 px-4 rounded transition duration-300"
+                className="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-2 px-4 rounded transition duration-300"
               >
-                Crear Flat
+                Guardar Cambios
               </button>
             </form>
           </div>
