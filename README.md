@@ -16,7 +16,7 @@ FlatFinder es una aplicación web desarrollada con React y Vite que permite a lo
 - **Tailwind CSS**: Framework de CSS para estilos modernos y responsivos.
 - **Firebase**: Plataforma de desarrollo que proporciona base de datos y autenticación.
 - **Valibot**: Herramienta para validaciones en formularios.
-- **Tailwind Scrollbar Hide**: Para ocultar las barras de desplazamiento en Tailwind.
+- **Tailwind Scrollbar Hide**: Plugin de **Tailwind CSS** para ocultar las barras de desplazamiento en Tailwind.
 - **Iconify**: Para incluir iconos de manera sencilla.
 
 ## Configuraciones necesarias
