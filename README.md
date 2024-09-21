@@ -21,11 +21,13 @@ FlatFinder es una aplicación web desarrollada con React y Vite que permite a lo
 
 ## Configuraciones necesarias
 
-1. **Instala las dependencias:** Asegúrate de tener Node.js instalado en tu máquina, luego ejecuta: npm install
+1. **Instala las dependencias:** Asegúrate de tener Node.js instalado en tu máquina, luego ejecuta: ``` npm install ```
 2. **Configura las credenciales de Firebase:** Crea un archivo **.env** en la raíz del proyecto y añade tus claves de Firestore:
+```
   - VITE_FIREBASE_API_KEY= tu_api_key
   - VITE_FIREBASE_AUTH_DOMAIN= tu_auth_domain
   - VITE_FIREBASE_PROJECT_ID= tu_project_id
   - VITE_FIREBASE_STORAGE_BUCKET= tu_storage_bucket
   - VITE_FIREBASE_MESSAGING_SENDER_ID= tu_messaging_sender_id
   - VITE_FIREBASE_APP_ID= tu_app_id
+```
